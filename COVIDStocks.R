@@ -58,6 +58,8 @@ ggplot(fn)+geom_point(aes(x=n,y=value,color=variable))+
   geom_vline(xintercept=15,color="orange")+
   xlab("Date")+ylab("Percent Change")
 
+fna=f[complete.cases(f),] # Remove NA rows
+
 # Graph displaying Percentage of new cases in the US,
 # Orange line represents the 1st confirmed case in US
 ggplot(fna)+geom_point(aes(x=n,y=cases),color="Black")+
@@ -65,8 +67,28 @@ ggplot(fna)+geom_point(aes(x=n,y=cases),color="Black")+
   xlab("Date")
 
 # Date vs Each Linear regression
-lmA=lm(aapl ~ cases,data=f)
-summary(lmA)
+lmA=lm(aapl ~ cases,data=fna)
+lmAS=summary(lmA)
+Apred=lmAS$coefficients[1]+lmAS$coefficients[2]*fna$cases
+Ares=fna$aapl-Apred
+fna$Ares=Ares
+# Adjusted R-Squared = 0.01537
 
-lmM=lm(msft ~ cases,data=f)
-summary(lmM)
+lmM=lm(msft ~ cases,data=fna)
+lmMS=summary(lmM)
+Mpred=lmMS$coefficients[1]+lmMS$coefficients[2]*fna$cases
+Mres=fna$msft-Mpred
+fna$Mres=Mres
+# Adjusted R-Squared = 0.001555
+
+# Residual Plots From Predicted (Red for Apple, Blue for Microsoft)
+ggplot(fna,aes(x=n))+geom_point(aes(y=Mres),color="darkblue",size=0.75)+
+  geom_point(aes(y=Ares),color="red",size=0.75)+
+  geom_hline(yintercept = 0,color="black")+
+  xlab("Date")+ylab("Residuals")
+
+# These previous tests provided some fairly weak regressions.
+# So next, I would like to do a similar regression model, except
+# I am now going to try to predict the closing stock price based on the
+# COVID change from the previous day, rather than the same day.
+

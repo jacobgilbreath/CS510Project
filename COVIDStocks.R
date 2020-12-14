@@ -66,7 +66,7 @@ ggplot(fna)+geom_point(aes(x=n,y=cases),color="Black")+
   geom_vline(xintercept=15,color="orange")+ylab("Percent Change in New Cases")+
   xlab("Date")
 
-# Date vs Each Linear regression
+# Date vs Each Stock Linear regression
 lmA=lm(aapl ~ cases,data=fna)
 lmAS=summary(lmA)
 Apred=lmAS$coefficients[1]+lmAS$coefficients[2]*fna$cases
@@ -81,14 +81,28 @@ Mres=fna$msft-Mpred
 fna$Mres=Mres
 # Adjusted R-Squared = 0.001555
 
+# Plot of Linear Relationship we are trying to model.
+ggplot(fna,aes(x=cases))+
+  geom_point(aes(y=msft),color="blue")+
+  geom_hline(yintercept = 0, color = "black") +
+  geom_vline(xintercept = 0, color = "black") +
+  xlab("Percent Change in Cases") + ylab("Percent Microsoft Stock Change")
+
+ggplot(fna,aes(x=cases))+geom_point(aes(y=aapl),color="red")+
+  geom_hline(yintercept = 0, color = "black") +
+  geom_vline(xintercept = 0, color = "black") +
+  xlab("Percent Change in Cases") + ylab("Percent Apple Stock Change")
+
 # Residual Plots From Predicted (Red for Apple, Blue for Microsoft)
 ggplot(fna,aes(x=n))+geom_point(aes(y=Mres),color="darkblue",size=0.75)+
   geom_point(aes(y=Ares),color="red",size=0.75)+
   geom_hline(yintercept = 0,color="black")+
-  xlab("Date")+ylab("Residuals")
+  xlab("Days After Outbreak")+ylab("Residuals")
 
-# These previous tests provided some fairly weak regressions.
-# So next, I would like to do a similar regression model, except
-# I am now going to try to predict the closing stock price based on the
-# COVID change from the previous day, rather than the same day.
-
+# From the models, there is no evidence to support that the Apple 
+# and Microsoft closing stock prices were directly affected by only the
+# COVID-19 outbreak. Although it was most likely a cause for the instability
+# of the market, there must have been several other factors
+# leading to the fall of the DOW. I would think a further study
+# that includes other variables, such as travel restrictions or new 
+# products released,  will provide better results with similar analyses.
